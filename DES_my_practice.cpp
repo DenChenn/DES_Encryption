@@ -327,14 +327,20 @@ void DES::encryptText() {
 }
 
 void DES::showResult() {
+    cout << endl;
+    cout << "The encryption result is: ";
     for(auto a : hexStringResult)
         cout << a;
     cout << endl;
 }
 
 int main () {
-    string plaintext = "Advanced";
-    string key = "12345678";
+    string plaintext;
+    string key;
+    cout << "Please enter the plaintext: " << endl;
+    cin >> plaintext;
+    cout << "Please enter the key: " << endl;
+    cin >> key;
     DES d;
     d.getKeyString(key);
     d.getPlaintextString(plaintext);
