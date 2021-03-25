@@ -2,6 +2,9 @@
 #include <bitset>
 #include <string>
 #include <vector>
+#include <time.h>
+#include <fstream>
+
 using namespace std;
 
 const int PC_1[56] = { 
@@ -327,31 +330,59 @@ void DES::encryptText() {
 }
 
 void DES::showResult() {
-    cout << endl;
     cout << "The encryption result is: ";
     for(auto a : hexStringResult)
         cout << a;
     cout << endl;
+    hexStringResult.clear();
 }
 
 int main () {
-    string plaintext;
-    string key;
-    cout << "Please enter the plaintext: " << endl;
-    cin >> plaintext;
-    cout << "Please enter the key: " << endl;
-    cin >> key;
-    DES d;
-    d.getKeyString(key);
-    d.getPlaintextString(plaintext);
-    d.transferToBinaryString();
-    //test
-    // d.plaintextString = "0000000100100011010001010110011110001001101010111100110111101111";
-    // d.keyString = "0001001100110100010101110111100110011011101111001101111111110001";
-    //test
-    d.generateRealKeySet();
-    d.encryptText();
-    d.showResult();
+    ifstream ifs;
+    ifs.open("input.txt", ios::in);
+
+    string testPlaintext;
+    string testKey;
+    string tempString;
+    int pos;
+
+    while(getline(ifs, tempString)){
+        pos = tempString.find_first_of(" ", 0);
+        testKey = tempString.substr(0, pos);
+        testPlaintext = tempString.substr(pos+1, tempString.length() - pos - 1);
+        cout << "TestKey: " << testKey << " length: " << testKey.length() << endl;
+        cout << "TestPlaintext: " << testPlaintext << " length: " << testPlaintext.length() << endl;
+
+        DES d;
+        d.getKeyString(testKey);
+        d.getPlaintextString(testPlaintext);
+        d.transferToBinaryString();
+        d.generateRealKeySet();
+        d.encryptText();
+        d.showResult();
+
+        clock_t start, end;
+        double cpu_time_used;
+        double sumOfTime = 0;
+        int t = 1000;
+        while(t--) {
+            start = clock();
+
+            DES d;
+            d.getKeyString(testKey);
+            d.getPlaintextString(testPlaintext);
+            d.transferToBinaryString();
+            d.generateRealKeySet();
+            d.encryptText();
+        
+            end = clock();
+            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+            sumOfTime += cpu_time_used;
+        }
+        cout << "Used time: " << sumOfTime / 1000 << " sec" << endl;
+        cout << endl;
+    }
+    return 0;
 }
 
 
